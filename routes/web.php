@@ -63,6 +63,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/products/store', [ProductsController::class, 'store'])->name('products.store');
         Route::delete('/products/{id}', [ProductsController::class, 'destroy'])->name('products.destroy');
 
+        Route::post('/products/import', [ProductsController::class, 'import'])->name('products.import');
+
         // SALES HISTORY
         //Route::get('/sales-history', [SalesController::class, 'history'])->name('sales.history');
     });

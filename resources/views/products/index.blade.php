@@ -1,6 +1,32 @@
 @extends('layouts.admin')
 
 @section('content')
+
+<div class="bg-white p-4 rounded shadow mb-4">
+
+    <h3 class="text-lg font-bold mb-2">
+        Import Products from Excel
+    </h3>
+
+    <form action="{{ route('products.import') }}"
+          method="POST"
+          enctype="multipart/form-data">
+
+        @csrf
+
+        <input type="file"
+               name="file"
+               required
+               class="border p-2 rounded">
+
+        <button type="submit"
+                class="bg-green-600 text-white px-4 py-2 rounded">
+            Upload Excel
+        </button>
+
+    </form>
+
+</div>
 <h2 class="text-3xl font-bold mb-6">Products List</h2>
 
 <table class="min-w-full border">

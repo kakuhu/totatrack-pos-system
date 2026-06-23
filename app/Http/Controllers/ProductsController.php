@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Imports\ProductsImport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Models\Product;
 
@@ -65,5 +66,16 @@ public function destroy($id)
     return response()->json([
         'success' => 'Product deleted successfully'
     ]);
+}
+
+public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv'
+    ]);
+
+    Excel::import(new ProductsImport, $request->file('file'));
+
+    return redirect()->back()->with('success', 'Products imported successfully.');
 }
 }
