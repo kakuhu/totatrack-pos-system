@@ -11,7 +11,27 @@
    <div class="min-h-screen flex flex-col md:flex-row">
         <!-- Sidebar -->
         <aside class="w-64 bg-white shadow p-4">
-            <h2 class="text-xl font-bold mb-6">Admin</h2>
+
+            @php
+    $category = auth()->user()->category ?? 'default';
+@endphp
+
+<div class="mb-6 text-center">
+
+    @if($category === 'hardware')
+        <img src="{{ asset('images/Ai-engineering.png') }}"
+             alt="Hardware Logo"
+             class="h-40 mx-auto mb-2">
+    @elseif($category === 'grocery')
+        <img src="{{ asset('images/totopack.png') }}"
+             alt="Grocery Logo"
+             class="h-40 mx-auto mb-2">
+    @else
+       <h1>APRILFOTH INNOVATIONS</h1>
+    @endif
+
+
+</div>
 <ul>
 
     {{-- ADMIN ONLY --}}
