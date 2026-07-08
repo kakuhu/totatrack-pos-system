@@ -61,6 +61,12 @@
             </a>
         </li>
 
+        <li class="mb-2">
+            <a href="{{ route('refunds.index') }}"  class="text-blue-600 hover:underline">
+            Refund History
+        </a>
+        </li>
+
     @endif
 
 

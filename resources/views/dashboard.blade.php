@@ -18,6 +18,11 @@
                 <li class="mb-2"><a href="{{ route('products.index') }}" class="text-blue-600 hover:underline">Product List</a></li>
                 <li class="mb-2"><a href="{{ route('sales.index') }}" class="text-blue-600 hover:underline">POS / Sell</a></li>
                 <li class="mb-2"><a href="{{ route('sales.history') }}" class="text-blue-600 hover:underline">Sales History</a></li>
+                <li class="mb-2">
+    <a href="{{ route('refunds.index') }}" class="text-blue-600 hover:underline">
+        Refund History
+    </a>
+</li>
                    <li class="mb-2"><a href="{{ route('users.index') }}" class="text-blue-600 hover:underline">Users</a></li>
                                       <li class="mt-6">
     <form method="POST" action="{{ route('logout') }}">

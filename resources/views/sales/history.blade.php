@@ -10,6 +10,7 @@
             <th class="px-4 py-2">Total</th>
             <th class="px-4 py-2">Sold At</th>
             <th class="px-4 py-2">Items</th>
+            <th class="px-4 py-2">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -24,6 +25,12 @@
                         <li>{{ $item->product->name }} - {{ $item->quantity }} x ZMW {{ $item->price }}</li>
                     @endforeach
                 </ul>
+            </td>
+            <td class="px-4 py-2">
+                    <a href="{{ route('refunds.create', $sale->id) }}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+                        Refund
+                        </a>
             </td>
         </tr>
         @endforeach

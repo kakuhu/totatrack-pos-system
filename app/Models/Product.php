@@ -18,4 +18,13 @@ protected $fillable = [
     {
         return $this->hasMany(Sale::class);
     }
+    public function saleItems()
+    {
+        return $this->hasMany(SaleItem::class);
+    }
+
+    public function refundItems()
+    {
+    return $this->hasMany(RefundItem::class);
+    }
 }

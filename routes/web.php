@@ -6,6 +6,8 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RefundController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,9 +50,9 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::middleware(['role:admin'])->group(function () {
 
-        Route::get('/dashboard', function () {
-            return view('dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->middleware(['auth'])
+            ->name('dashboard');
 
         // USERS
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -68,10 +70,31 @@ Route::middleware(['auth'])->group(function () {
         // SALES HISTORY
         //Route::get('/sales-history', [SalesController::class, 'history'])->name('sales.history');
     });
+
+    // REFUND HISTORY
+    Route::get('/refunds', [RefundController::class, 'index'])
+        ->middleware('role:admin,supervisor')
+        ->name('refunds.index');
+
+
+    // CREATE REFUND
+    Route::get('/refunds/{sale}', [RefundController::class, 'create'])
+        ->middleware('role:admin,supervisor')
+        ->name('refunds.create');
+
+
+    Route::post('/refunds/{sale}', [RefundController::class, 'store'])
+        ->middleware('role:admin,supervisor')
+        ->name('refunds.store');
+
+
     // SALES HISTORY
     Route::get('/sales-history', [SalesController::class, 'history'])
         ->middleware('role:admin,supervisor')
         ->name('sales.history');
+
+
+
     /*
     |--------------------------------------------------------------------------
     | SUPERVISOR
