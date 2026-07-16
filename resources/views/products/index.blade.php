@@ -68,6 +68,10 @@
     </tbody>
 </table>
 
+<div class="mt-4">
+    {{ $products->links() }}
+</div>
+
 <!-- Edit Product Modal -->
 <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
     <div class="bg-white p-6 rounded w-96">

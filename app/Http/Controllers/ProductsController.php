@@ -37,7 +37,7 @@ class ProductsController extends Controller
     // List all products
 public function index()
 {
-    $products = Product::all(); // Get all products from DB
+    $products = Product::paginate(10); // Get all products from DB
     return view('products.index', compact('products'));
 }
 
