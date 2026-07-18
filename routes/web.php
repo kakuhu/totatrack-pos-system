@@ -8,6 +8,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RefundController;
+use App\Http\Controllers\SalesReportController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -92,6 +95,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sales-history', [SalesController::class, 'history'])
         ->middleware('role:admin,supervisor')
         ->name('sales.history');
+
+
+
+
+    // SALES REPORT
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/sales-report', [SalesReportController::class, 'index'])
+            ->name('sales.report');
+        Route::get('/sales-report/pdf', [SalesReportController::class, 'exportPdf'])
+            ->name('sales.report.pdf');
+    });
 
 
 

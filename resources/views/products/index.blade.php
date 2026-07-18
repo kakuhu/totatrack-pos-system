@@ -29,6 +29,20 @@
 </div>
 <h2 class="text-3xl font-bold mb-6">Products List</h2>
 
+<form method="GET" action="{{ route('products.index') }}" class="mb-4 flex flex-wrap items-center gap-2">
+    <input
+        type="text"
+        name="search"
+        value="{{ request('search') }}"
+        placeholder="Search by name or barcode"
+        class="border rounded p-2 flex-1 min-w-[220px]"
+    >
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Search</button>
+    @if(request('search'))
+        <a href="{{ route('products.index') }}" class="text-sm text-gray-600 hover:text-blue-700">Clear</a>
+    @endif
+</form>
+
 <table class="min-w-full border">
     <thead>
         <tr class="bg-gray-200">

@@ -89,6 +89,11 @@
         </a>
     </li>
 
+    <li class="mb-2">
+        <a href="{{ route('sales.report') }}" class="text-blue-600 hover:underline">
+            Sales Report
+        </a>
+    </li>
 
     {{-- LOGOUT --}}
     <li class="mt-6">

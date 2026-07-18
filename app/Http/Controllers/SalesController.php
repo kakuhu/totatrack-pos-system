@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
+use Carbon\Carbon;
 
 class SalesController extends Controller
 {
@@ -62,6 +63,7 @@ class SalesController extends Controller
     public function sell(Request $request)
     {
         $sale = Sale::create([
+            'user_id' => auth()->id(),
             'total' => collect($request->cart)->sum('total')
         ]);
 
@@ -85,9 +87,22 @@ class SalesController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function history()
+    public function history(Request $request)
     {
-        $sales = Sale::with('items.product')->latest()->get();
-        return view('sales.history', compact('sales'));
+        $from = $request->from ?? Carbon::today()->toDateString();
+        $to = $request->to ?? Carbon::today()->toDateString();
+
+        $sales = Sale::with('items.product', 'refunds.items')
+            ->whereDate('sold_at', '>=', $from)
+            ->whereDate('sold_at', '<=', $to)
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('sales.history', compact(
+            'sales',
+            'from',
+            'to'
+        ));
     }
 }

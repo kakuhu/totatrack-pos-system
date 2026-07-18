@@ -35,13 +35,25 @@ class ProductsController extends Controller
     }
 
     // List all products
-public function index()
-{
-    $products = Product::paginate(10); // Get all products from DB
-    return view('products.index', compact('products'));
-}
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
 
-public function update(Request $request, Product $product)
+        $productsQuery = Product::query();
+
+        if ($search) {
+            $productsQuery->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('barcode', 'like', "%{$search}%");
+            });
+        }
+
+        $products = $productsQuery->paginate(10)->withQueryString();
+
+        return view('products.index', compact('products'));
+    }
+
+    public function update(Request $request, Product $product)
 {
     $request->validate([
         'name' => 'required|string|max:255',

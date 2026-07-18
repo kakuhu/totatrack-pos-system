@@ -295,15 +295,20 @@ function completeSale() {
 
     })
 
-    .then(res => res.json())
-
+    .then(res => {
+        if (!res.ok) {
+            return res.json().then(err => Promise.reject(err));
+        }
+        return res.json();
+    })
     .then(data => {
-
         alert("Sale completed!");
-
         cart = [];
-
         renderCart();
+    })
+    .catch(error => {
+        console.error('Sale failed', error);
+        alert('Sale failed. Check server logs or refresh and try again.');
     });
 }
 
