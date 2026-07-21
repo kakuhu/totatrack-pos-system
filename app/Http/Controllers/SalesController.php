@@ -62,12 +62,29 @@ class SalesController extends Controller
 
     public function sell(Request $request)
     {
+        $cart = $request->cart ?? [];
+
+        // Validate availability first
+        foreach ($cart as $item) {
+            $product = Product::find($item['id']);
+            if (!$product) {
+                return response()->json(['error' => "Product not found (id: {$item['id']})"], 404);
+            }
+
+            if ($product->stock < $item['quantity']) {
+                return response()->json([
+                    'error' => "Insufficient stock for {$product->name}. Available: {$product->stock}"
+                ], 422);
+            }
+        }
+
+        // Create sale after validations
         $sale = Sale::create([
             'user_id' => auth()->id(),
-            'total' => collect($request->cart)->sum('total')
+            'total' => collect($cart)->sum('total')
         ]);
 
-        foreach ($request->cart as $item) {
+        foreach ($cart as $item) {
             SaleItem::create([
                 'sale_id' => $sale->id,
                 'product_id' => $item['id'],

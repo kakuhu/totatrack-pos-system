@@ -47,7 +47,7 @@
 <table class="min-w-full bg-white shadow rounded overflow-hidden">
     <thead class="bg-gray-200">
         <tr>
-            <th class="px-4 py-2">ID</th>
+            
             <th class="px-4 py-2">Total</th>
             <th class="px-4 py-2">Refund Qty</th>
             <th class="px-4 py-2">Refund Amount</th>
@@ -71,7 +71,7 @@
             $netAmount = $sale->total - $totalRefundAmount;
         @endphp
         <tr class="border-b">
-            <td class="px-4 py-2">{{ $sale->id }}</td>
+            
             <td class="px-4 py-2">ZMW {{ number_format($sale->total, 2) }}</td>
             <td class="px-4 py-2">{{ $totalRefundQty }}</td>
             <td class="px-4 py-2">ZMW {{ number_format($totalRefundAmount, 2) }}</td>

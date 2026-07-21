@@ -20,6 +20,7 @@
                 value="{{ $product->id }}"
                 data-name="{{ $product->name }}"
                 data-price="{{ $product->price }}"
+                data-stock="{{ $product->stock }}"
             >
                 {{ $product->name }} - ${{ $product->price }}
             </option>
@@ -70,6 +71,17 @@ function addToCart() {
 
     let name = select.options[select.selectedIndex].dataset.name;
     let price = parseFloat(select.options[select.selectedIndex].dataset.price);
+    let stock = parseInt(select.options[select.selectedIndex].dataset.stock, 10);
+
+    if (isNaN(stock) || stock <= 0) {
+        alert('Product is out of stock');
+        return;
+    }
+
+    if (quantity > stock) {
+        alert(`Only ${stock} items available in stock`);
+        return;
+    }
 
     let total = price * quantity;
 
@@ -78,7 +90,8 @@ function addToCart() {
         name: name,
         price: price,
         quantity: quantity,
-        total: total
+        total: total,
+        stock: stock
     });
 
     renderCart();
@@ -125,6 +138,14 @@ function completeSale() {
         alert("Sale completed!");
         cart = [];
         renderCart();
+    })
+    .catch(error => {
+        console.error('Sale failed', error);
+        if (error && error.error) {
+            alert(error.error);
+        } else {
+            alert('Sale failed. Check server logs or refresh and try again.');
+        }
     });
 }
 
@@ -142,12 +163,18 @@ document.getElementById('barcodeInput')
                 return;
             }
 
+            if (!product || typeof product.stock === 'undefined' || product.stock <= 0) {
+                alert('Product is out of stock');
+                return;
+            }
+
             cart.push({
                 id: product.id,
                 name: product.name,
                 price: parseFloat(product.price),
                 quantity: 1,
-                total: parseFloat(product.price)
+                total: parseFloat(product.price),
+                stock: parseInt(product.stock, 10)
             });
 
             renderCart();

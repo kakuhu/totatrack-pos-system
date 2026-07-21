@@ -43,9 +43,22 @@
     @endif
 </form>
 
+<!-- Bulk Actions -->
+<div class="mb-4 flex flex-wrap gap-2" id="bulkActions" style="display: none;">
+    <button type="button" onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        Export to Excel
+    </button>
+    <button type="button" onclick="bulkDeleteSelected()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+        Delete Selected
+    </button>
+</div>
+
 <table class="min-w-full border">
     <thead>
         <tr class="bg-gray-200">
+            <th class="border px-4 py-2 w-8">
+                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)">
+            </th>
             <th class="border px-4 py-2">Name</th>
             <th class="border px-4 py-2">Barcode</th>
             <th class="border px-4 py-2">Category</th>
@@ -59,6 +72,9 @@
     <tbody id="productsTable">
         @foreach($products as $product)
         <tr id="productRow{{ $product->id }}">
+            <td class="border px-4 py-2">
+                <input type="checkbox" class="productCheckbox" value="{{ $product->id }}" onchange="updateBulkActionsVisibility()">
+            </td>
             <td>{{ $product->name }}</td>
             <td>{{ $product->barcode }}</td>
             <td>{{ $product->category }}</td>
@@ -132,11 +148,14 @@
 
 @section('scripts')
 <script>
-let products = @json($products);
+let products = @json($products->items());
 
 // Open modal and populate fields
 function openEditModal(id) {
     const product = products.find(p => p.id === id);
+    if (!product) {
+        return alert('Product not found. Refresh the page and try again.');
+    }
     document.getElementById('editProductId').value = product.id;
     document.getElementById('editName').value = product.name;
     document.getElementById('editBarcode').value = product.barcode;
@@ -174,9 +193,10 @@ document.getElementById('editProductForm').addEventListener('submit', function(e
         row.children[0].innerText = formData.get('name');
         row.children[1].innerText = formData.get('barcode');
         row.children[2].innerText = formData.get('category');
-        row.children[3].innerText = formData.get('cost_price');
-        row.children[4].innerText = formData.get('price');
+        row.children[3].innerText = parseFloat(formData.get('cost_price')).toFixed(2);
+        row.children[4].innerText = parseFloat(formData.get('price')).toFixed(2);
         row.children[5].innerText = formData.get('stock');
+        row.children[6].innerText = (parseFloat(formData.get('cost_price')) * parseInt(formData.get('stock'), 10)).toFixed(2);
 
         closeEditModal();
         alert(data.success);
@@ -206,6 +226,73 @@ function deleteProduct(id) {
 
         alert(data.success);
     });
+}
+
+// Bulk Actions
+function toggleSelectAll(checkbox) {
+    const checkboxes = document.querySelectorAll('.productCheckbox');
+    checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    updateBulkActionsVisibility();
+}
+
+function updateBulkActionsVisibility() {
+    const checkedCount = document.querySelectorAll('.productCheckbox:checked').length;
+    const bulkActions = document.getElementById('bulkActions');
+    bulkActions.style.display = checkedCount > 0 ? 'flex' : 'none';
+}
+
+function getSelectedIds() {
+    const checkboxes = document.querySelectorAll('.productCheckbox:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function bulkDeleteSelected() {
+    const ids = getSelectedIds();
+    
+    if (ids.length === 0) {
+        alert('No products selected');
+        return;
+    }
+
+    if (!confirm(`Are you sure you want to delete ${ids.length} product(s)?`)) {
+        return;
+    }
+
+    fetch("{{ route('products.bulkDelete') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('input[name=_token]').value
+        },
+        body: JSON.stringify({ ids: ids })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        
+        // Remove rows from table
+        ids.forEach(id => {
+            const row = document.getElementById(`productRow${id}`);
+            if (row) row.remove();
+        });
+        
+        // Reset checkboxes
+        document.getElementById('selectAllCheckbox').checked = false;
+        updateBulkActionsVisibility();
+        
+        alert(data.success);
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Error deleting products');
+    });
+}
+
+function exportToExcel() {
+    window.location.href = "{{ route('products.exportStock') }}?all=true";
 }
 
 </script>

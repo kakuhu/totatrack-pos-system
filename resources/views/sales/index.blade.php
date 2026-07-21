@@ -31,7 +31,8 @@
                 <option
                     value="{{ $product->name }}"
                     data-id="{{ $product->id }}"
-                    data-price="{{ $product->price }}">
+                    data-price="{{ $product->price }}"
+                    data-stock="{{ $product->stock }}">
                 </option>
             @endforeach
         </datalist>
@@ -93,7 +94,7 @@
 
 <script>
 
-let cart = [];
+    let cart = [];
 
 /*
 |--------------------------------------------------------------------------
@@ -118,6 +119,17 @@ function addToCart() {
     let id = option.dataset.id;
     let name = option.value;
     let price = parseFloat(option.dataset.price);
+    let stock = parseInt(option.dataset.stock, 10);
+
+    if (isNaN(stock) || stock <= 0) {
+        alert('Product is out of stock');
+        return;
+    }
+
+    if (quantity > stock) {
+        alert(`Only ${stock} items available in stock`);
+        return;
+    }
 
     let total = price * quantity;
 
@@ -125,7 +137,12 @@ function addToCart() {
     let existing = cart.find(i => i.id == id);
 
     if (existing) {
-        existing.quantity += quantity;
+        let newQty = existing.quantity + quantity;
+        if (newQty > stock) {
+            alert(`Only ${stock} items available in stock`);
+            return;
+        }
+        existing.quantity = newQty;
         existing.total = existing.quantity * existing.price;
     } else {
         cart.push({
@@ -133,7 +150,8 @@ function addToCart() {
             name,
             price,
             quantity,
-            total
+            total,
+            stock
         });
     }
 
@@ -222,6 +240,11 @@ function attachCartEvents() {
 
             let item = cart.find(i => i.id == id);
 
+            if (item.quantity + 1 > item.stock) {
+                alert(`Only ${item.stock} items available in stock`);
+                return;
+            }
+
             item.quantity++;
 
             item.total = item.quantity * item.price;
@@ -308,7 +331,11 @@ function completeSale() {
     })
     .catch(error => {
         console.error('Sale failed', error);
-        alert('Sale failed. Check server logs or refresh and try again.');
+        if (error && error.error) {
+            alert(error.error);
+        } else {
+            alert('Sale failed. Check server logs or refresh and try again.');
+        }
     });
 }
 
